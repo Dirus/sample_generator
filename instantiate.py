@@ -1,6 +1,7 @@
 import json
 import string
 from random import choice, randint, randrange
+import datetime
 
 # The JSON Object that defines the default values of certain types.
 typesInstantiator = {
@@ -49,6 +50,9 @@ def getObjectType(obj):
 def instantiatePrimitive(obj,name):
     if obj.get('default'):
         return obj['default']
+    # Provide current date with YYYY-MM-DD format
+    if obj.get('format') == 'date':
+        return (datetime.datetime.now()-datetime.timedelta(days=randint(0, 366))).strftime("%Y-%m-%d")
     obj_type = obj.get('type')
     if obj_type == 'string':
         obj['minLength'] = obj.get('minLength') or 1
