@@ -15,6 +15,15 @@ class InstantiateTest(unittest.TestCase):
             type = True
         self.assertTrue(type)
 
+    def test_should_instantiate_string_with_minlength_maxlength(self):
+        schema = {
+            'type':'string',
+            'minLength':5,
+            'maxLength':10
+        }
+        result = instantiate(schema)
+        self.assertIn(len(result),range(5,10))
+
     def test_should_instantiate_null(self):
         schema = {
             'type': 'null'
@@ -27,8 +36,7 @@ class InstantiateTest(unittest.TestCase):
         schema = {'type': 'number'}
 
         result = instantiate(schema)
-        expected = 0
-        self.assertEqual(expected,result)
+        self.assertTrue(0 < result < 1000000)
 
     def test_should_instantiate_boolean(self):
         schema = {
@@ -55,3 +63,12 @@ class InstantiateTest(unittest.TestCase):
         result = instantiate(schema)
         datetime_object = datetime.datetime.strptime(result, '%Y-%m-%d')
         self.assertTrue(isinstance(datetime_object, datetime.datetime))
+    
+    def test_should_instantiate_number_with_min_max_values(self):
+        schema = {
+            'type': 'number',
+            'minimum': 1,
+            'maximum': 6
+        }
+        result = instantiate(schema)
+        self.assertIn(result,[1,2,3,4,5,6])

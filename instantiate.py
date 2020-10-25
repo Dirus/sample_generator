@@ -54,11 +54,17 @@ def instantiatePrimitive(obj,name):
     if obj.get('format') == 'date':
         return (datetime.datetime.now()-datetime.timedelta(days=randint(0, 366))).strftime("%Y-%m-%d")
     obj_type = obj.get('type')
+    # Instantiate for string values
     if obj_type == 'string':
         obj['minLength'] = obj.get('minLength') or 1
         obj['maxLength'] = obj.get('maxLength') or 9
         chars = string.ascii_lowercase
         return random_string_generator_variable_size(obj['minLength'], obj['maxLength'], chars)
+    # Instantiate for numbers
+    if obj_type in ('number', 'integer'):
+        obj['minimum'] = obj.get('minimum') or 1
+        obj['maximum'] = obj.get('maximum') or 999999
+        return randint(obj['minimum'], obj['maximum'])
     return typesInstantiator[obj_type]
 
 #  The main function.
@@ -95,6 +101,7 @@ def instantiate(schema,options=None):
         #         data[name] = {}
         #     elif isinstance(data,list) and ({} not in data):
         #         data.append({})
+        # instantiate primitives
         elif obj.get('type'):
             data[name] = instantiatePrimitive(obj, name)
 
