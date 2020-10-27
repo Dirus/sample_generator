@@ -67,6 +67,22 @@ def instantiate_primitive(obj,name):
         return randint(obj['minimum'], obj['maximum'])
     return typesInstantiator[obj_type]
 
+#  Checks whether a variable is an enum.
+#  @param obj - an object.
+def is_enum(obj):
+    if obj.get('enum') or obj.get('enumDescriptions'):
+        return True
+    return False
+
+#  Instantiate an enum.
+#  @param obj - The object that represents the primitive.
+def instantiate_enum(obj):
+    if obj.get('enum'):
+        return obj['enum'][randrange(0,len(obj['enum']))]
+    else:
+        return list(obj['enumDescriptions'].keys())[randrange(0, len(obj['enumDescriptions']))]
+
+
 #  The main function.
 #  Calls sub-objects recursively, depth first, using the sub-function 'visit'.
 #  @param schema - The schema to instantiate.
@@ -102,6 +118,8 @@ def instantiate(schema,options=None):
         #     elif isinstance(data,list) and ({} not in data):
         #         data.append({})
         # instantiate primitives
+        elif is_enum(obj):
+            data[name] = instantiate_enum(obj)
         elif obj.get('type'):
             data[name] = instantiate_primitive(obj, name)
 

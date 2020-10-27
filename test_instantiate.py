@@ -22,7 +22,7 @@ class InstantiateTest(unittest.TestCase):
             'maxLength':10
         }
         result = instantiate(schema)
-        self.assertIn(len(result),range(5,10))
+        self.assertIn(len(result),range(5,11))
 
     def test_should_instantiate_null(self):
         schema = {
@@ -107,3 +107,52 @@ class InstantiateTest(unittest.TestCase):
         result = instantiate(schema)
         expected = {'title':'Example'}
         self.assertEqual(expected,result)
+
+    def test_should_instantiate_object_with_more_than_one_property(self):
+        schema = {
+            'type':'object',
+            'properties':{
+                'title':{
+                    'type':'string',
+                    'default':'Example'
+                },
+                'amount':{
+                    'type':'number',
+                    'default':400
+                }
+            }
+        }
+        result = instantiate(schema)
+        expected = {
+            'title':'Example',
+            'amount':400
+            }
+        self.assertEqual(expected,result)
+
+    def test_should_instantiate_string_with_min_max_length(self):
+        schema = {
+            'type':'object',
+            'properties':{
+                'title':{
+                    'type':'string',
+                    'minLength':5,
+                    'maxLength':10
+                }
+            }
+        }
+        result = instantiate(schema)
+        self.assertLessEqual(5,len(result['title']))
+        self.assertGreaterEqual(10,len(result['title']))
+
+    def test_should_instantiate_object_with_enum(self):
+        schema = {
+            'type':'object',
+            'properties':{
+                'title':{
+                    'type':'string',
+                    'enum':['E1','E2']
+                },
+            }
+        }
+        result = instantiate(schema)
+        self.assertIn(result['title'],['E1','E2'])
