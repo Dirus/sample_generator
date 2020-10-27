@@ -12,8 +12,8 @@ class InstantiateTest(unittest.TestCase):
         }
         result = instantiate(schema)
         if isinstance(result,str):
-            type = True
-        self.assertTrue(type)
+            schema_type = True
+        self.assertTrue(schema_type)
 
     def test_should_instantiate_string_with_minlength_maxlength(self):
         schema = {
@@ -72,3 +72,24 @@ class InstantiateTest(unittest.TestCase):
         }
         result = instantiate(schema)
         self.assertIn(result,[1,2,3,4,5,6])
+# Test Suite for Objects
+    def test_should_instantiate_object_without_properties(self):
+        schema = {
+            'type': 'object'
+        }
+        result = instantiate(schema)
+        expected = {}
+        self.assertEqual(result, expected)
+
+    def test_should_instantiate_object_with_property(self):
+        schema = {
+            'type': 'object',
+            'properties': {
+                'title': {
+                    'type': 'string'
+                }
+            }
+        }
+        result = instantiate(schema)
+        self.assertIn('title', result)
+        self.assertTrue(len(result['title']) > 0)

@@ -23,18 +23,18 @@ def random_string_generator_variable_size(min_size, max_size, allowed_chars):
 # Checks whether a property is on required array.
 # @param property - the property to check.
 # @param requiredArray - the required array.
-def isPropertyRequired(property,requiredArray):
+def is_property_required(property,required_array):
     found = False
-    for item in requiredArray:
+    for item in required_array:
         if item == property:
             found = True
     return found
 
-def shouldVisit(property, obj, options):
+def should_visit(property, obj, options):
     if options['requiredPropertiesOnly']:
         # Return True if required array is present in schema object in case of options{true}.
         if obj.get('required'):
-            return isPropertyRequired(property, obj['required'])
+            return is_property_required(property, obj['required'])
         else: 
             return False
     # Return true as requirePropertiesOnly not required hence visit all properties.
@@ -42,12 +42,12 @@ def shouldVisit(property, obj, options):
 
 #  Extracts the type of the object.
 #  @param obj - An object.
-def getObjectType(obj):
+def get_object_type(obj):
     return obj.get('type')
 
 #  Instantiate a primitive.
 #  @param obj - The object that represents the primitive.
-def instantiatePrimitive(obj,name):
+def instantiate_primitive(obj,name):
     if obj.get('default'):
         return obj['default']
     # Provide current date with YYYY-MM-DD format
@@ -76,7 +76,7 @@ def instantiate(schema,options=None):
         options = {'requiredPropertiesOnly': False}
 
     # traverse through a dictionary recursively.
-    def traverseDict(obj, name, data):
+    def traverse_dict(obj, name, data):
         if isinstance(data,dict) and data.get(name) is None:
             data[name] = {}
         elif isinstance(data,list):
@@ -84,7 +84,7 @@ def instantiate(schema,options=None):
 
         # Visit each property
         for key,value in obj['properties'].items():
-            if shouldVisit(key, obj, options):
+            if should_visit(key, obj, options):
                 visit(value,key,data[name])
     #    Visits each sub-object using recursion.
     #    If it reaches a primitive, instantiate it.
@@ -92,10 +92,10 @@ def instantiate(schema,options=None):
     #    @param name - The name of the current object.
     #    @param data - The instance data that represents the current object.
     def visit(obj, name, data):
-        obj_type = getObjectType(obj)
-         # We want non-primitives objects (primitive == object w/o properties).
+        obj_type = get_object_type(obj)
+        # We want non-primitives objects (primitive == object w/o properties).
         if obj_type == 'object' and obj.get('properties'):
-            traverseDict(obj,name,data)
+            traverse_dict(obj,name,data)
         # elif isinstance(obj,dict):
         #     if isinstance(data,dict) and data.get(name) is None:
         #         data[name] = {}
@@ -103,7 +103,7 @@ def instantiate(schema,options=None):
         #         data.append({})
         # instantiate primitives
         elif obj.get('type'):
-            data[name] = instantiatePrimitive(obj, name)
+            data[name] = instantiate_primitive(obj, name)
 
     data = {}
     visit(schema,'schema',data)
