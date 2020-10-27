@@ -93,3 +93,17 @@ class InstantiateTest(unittest.TestCase):
         result = instantiate(schema)
         self.assertIn('title', result)
         self.assertTrue(len(result['title']) > 0)
+
+    def test_should_instantiate_object_with_property_with_default_value(self):
+        schema = {
+            'type':'object',
+            'properties':{
+                'title':{
+                    'type':'string',
+                    'default':'Example'
+                }
+            }
+        }
+        result = instantiate(schema)
+        expected = {'title':'Example'}
+        self.assertEqual(expected,result)
