@@ -156,3 +156,12 @@ class InstantiateTest(unittest.TestCase):
         }
         result = instantiate(schema)
         self.assertIn(result['title'],['E1','E2'])
+
+# Test Suite for List
+    def test_should_instantiate_list(self):
+        schema = {
+            'type':'array'
+        }
+
+        result = instantiate(schema)
+        self.assertEqual([],result)

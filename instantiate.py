@@ -102,6 +102,22 @@ def instantiate(schema,options=None):
         for key,value in obj['properties'].items():
             if should_visit(key, obj, options):
                 visit(value,key,data[name])
+
+    # traverse through a list recursively
+    def traverse_list(obj,name,data):
+        if isinstance(data,dict):
+            if data.get(name) is None or len(data[name]) == 0:
+                data[name] = []
+            # To have minimum one item in array if minItems not provided.
+            length = 1
+            if obj.get('minItems'):
+                length = obj['minItems']
+            # Instantiate 'length' items.
+            if obj.get('items'):
+                for i in range(length):
+                    # Array items can contain, allOf, anyOf condition
+                    visit(obj['items'], i, data[name])
+
     #    Visits each sub-object using recursion.
     #    If it reaches a primitive, instantiate it.
     #    @param obj - The object that represents the schema.
@@ -118,10 +134,15 @@ def instantiate(schema,options=None):
         #     elif isinstance(data,list) and ({} not in data):
         #         data.append({})
         # instantiate primitives
+        elif obj_type == "array":
+            traverse_list(obj,name,data)
         elif is_enum(obj):
             data[name] = instantiate_enum(obj)
         elif obj.get('type'):
-            data[name] = instantiate_primitive(obj, name)
+            if isinstance(data, list):
+                data.append(instantiate_primitive(obj, name))
+            else:
+                data[name] = instantiate_primitive(obj, name)
 
     data = {}
     visit(schema,'schema',data)
