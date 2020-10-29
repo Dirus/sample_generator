@@ -165,3 +165,24 @@ class InstantiateTest(unittest.TestCase):
 
         result = instantiate(schema)
         self.assertEqual([],result)
+
+    def test_should_instantiate_list_with_object(self):
+        schema = {
+            'type':'array',
+            'items':{
+                'type':'object',
+                'properties':{
+                    'title':{
+                        'type':'string',
+                        'minLength':5,
+                        'maxLength':5
+                    }
+                }
+            },
+            'minItems':2
+        }
+
+        result = instantiate(schema)
+        self.assertEqual(2,len(result))
+        print(result[0]['title'])
+        self.assertEqual(5,len(result[0]['title']))

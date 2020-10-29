@@ -128,11 +128,20 @@ def instantiate(schema,options=None):
         # We want non-primitives objects (primitive == object w/o properties).
         if obj_type == 'object' and obj.get('properties'):
             traverse_dict(obj,name,data)
-        # elif isinstance(obj,dict):
-        #     if isinstance(data,dict) and data.get(name) is None:
-        #         data[name] = {}
-        #     elif isinstance(data,list) and ({} not in data):
-        #         data.append({})
+        elif isinstance(obj,dict) and (('oneOf' in obj and obj['oneOf']) or ('anyOf' in obj and obj['anyOf'])):
+            # if data does not contain name and is object
+            if isinstance(data,dict) and data.get(name) is None:
+                data[name] = {}
+            # if data is list and empty
+            elif isinstance(data,list) and ({} not in data):
+                data.append({})
+            if obj_type == 'array':
+                traverse_list(obj, name, data)
+            if 'oneOf' in obj and obj['oneOf']:
+                visit(obj['oneOf'][0],name,data)
+            if 'anyOf' in obj and obj['anyOf']:
+                visit(obj['anyOf'][0],name,data)
+
         # instantiate primitives
         elif obj_type == "array":
             traverse_list(obj,name,data)
